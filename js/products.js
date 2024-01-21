@@ -1,4 +1,8 @@
 import {createApp} from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
+
+
+let productModal=null;
+
 const app = {
   data(){
     return {
@@ -6,6 +10,7 @@ const app = {
       apiPath:"fang-vueclass",
       products: [],
       tempProducts:{},
+
     }
   },
   methods:{
@@ -41,6 +46,14 @@ const app = {
     checkDetail(detail){
       this.tempProducts = {...detail};
     },
+
+    //開啟modal視窗
+    openModal(){
+      productModal.show();
+    },
+    closeModal(){
+      productModal.hide();
+    }
   },
 
   mounted(){
@@ -49,6 +62,11 @@ const app = {
     axios.defaults.headers.common.Authorization = token;
 
     this.checkLogin();
+
+
+    //modal實體化
+    productModal = new bootstrap.Modal(document.querySelector("#productModal"));
+
   }
 };
 
