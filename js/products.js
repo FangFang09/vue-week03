@@ -1,7 +1,8 @@
 import {createApp} from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
 
 
-let productModal=null;
+let productModal = null;
+let delProductModal = null;
 
 const app = {
   data(){
@@ -9,7 +10,10 @@ const app = {
       apiUrl:"https://vue3-course-api.hexschool.io",
       apiPath:"fang-vueclass",
       products: [],
-      tempProducts:{},
+      isNew:false,
+      tempProduct:{
+        imgUrl:[],
+      },
 
     }
   },
@@ -30,29 +34,68 @@ const app = {
         })
     },
 
-    //產品列表
+    //取得產品列表
     getProducts(){
       const api = `${this.apiUrl}/v2/api/${this.apiPath}/admin/products`;
       axios.get(api)
         .then((res)=>{
-          this.products = res.data.products;
+          this.products = [...res.data.products];
         })
         .catch((err)=>{
           alert(err.response.data.message);
         })
 
     },
-    //查看產品細節
-    checkDetail(detail){
-      this.tempProducts = {...detail};
-    },
 
     //開啟modal視窗
-    openModal(){
-      productModal.show();
+    openModal(status,item){
+      if(status === 'new'){  //新增
+        this.tempProduct = {};
+        this.isNew = true;
+        productModal.show();
+      } else if (status === 'edit'){ //編輯
+        this.tempProduct = {...item};
+        this.isNew = false;
+        productModal.show();
+      } else if (status === 'delete'){ //刪除
+        this.tempProduct = {...item};
+        delProductModal.show();
+      }
     },
-    closeModal(){
-      productModal.hide();
+    updateProduct(){
+      //讓post和put透過判斷式執行,就不用寫兩遍
+      let url = `${this.apiUrl}/v2/api/${this.apiPath}/admin/product/{${this.tempProduct.id}`;
+      let http = 'put';
+
+      if(this.isNew){
+        url = `${this.apiUrl}/v2/api/${this.apiPath}/admin/product/`;
+        http = 'post';
+      }
+      axios[http](url,{data:this.tempProduct})
+        .then((res)=>{
+          alert(res.data.message);
+          openModal.hide();
+          this.getProducts();
+        })
+        .catch((err)=>{
+          alert(err.response.data.message);
+        })
+
+
+
+    },
+    //刪除
+    delProduct(){
+      const url = `${this.apiUrl}/v2/api/${this.apiPath}/admin/product/${this.tempProduct.id}`;
+      axios.delete(url)
+        .then((res)=>{
+          alert(res.data.message);
+          delProductModal.hide();
+          this.getProducts();
+        })
+        .catch((err)=>{
+          alert(err.response.data.message);
+        })
     }
   },
 
@@ -65,7 +108,21 @@ const app = {
 
 
     //modal實體化
-    productModal = new bootstrap.Modal(document.querySelector("#productModal"));
+    productModal = new bootstrap.Modal(
+      document.querySelector("#productModal"),
+      {
+        keyboard:false,
+        backdrop:'static'
+      }
+    );
+    //delProductModal實體化
+    delProductModal = new bootstrap.Modal(
+      document.querySelector("#delProductModal"),
+      {
+        keyboard:false,
+        backdrop:'static'
+      }
+    );
 
   }
 };
