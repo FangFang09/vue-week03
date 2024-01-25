@@ -12,7 +12,7 @@ const app = {
       products: [],
       isNew:false,
       tempProduct:{
-        imgUrl:[],
+        imagesUrl:[],
       },
 
     }
@@ -29,8 +29,8 @@ const app = {
           this.getProducts();
         })
         .catch((err)=>{
-          alert(err.response.data.message);
-          window.location = "login.html";
+          alert(err.data.message);
+          window.location = "./login.html";
         })
     },
 
@@ -42,7 +42,7 @@ const app = {
           this.products = [...res.data.products];
         })
         .catch((err)=>{
-          alert(err.response.data.message);
+          alert(err.data.message);
         })
 
     },
@@ -64,37 +64,35 @@ const app = {
     },
     updateProduct(){
       //讓post和put透過判斷式執行,就不用寫兩遍
-      let url = `${this.apiUrl}/v2/api/${this.apiPath}/admin/product/{${this.tempProduct.id}`;
-      let http = 'put';
+      let url = `${this.apiUrl}/v2/api/${this.apiPath}/admin/product/`;
+      let http = 'post';
 
-      if(this.isNew){
-        url = `${this.apiUrl}/v2/api/${this.apiPath}/admin/product/`;
-        http = 'post';
+      if(!this.isNew){
+        url = `${this.apiUrl}/v2/api/${this.apiPath}/admin/product/${this.tempProduct.id}`;
+        http = 'put';
       }
       axios[http](url,{data:this.tempProduct})
         .then((res)=>{
           alert(res.data.message);
-          openModal.hide();
-          this.getProducts();
+          productModal.hide(); //更新完關掉modal
+          this.getProducts(); //取得產品列表,重新渲染頁面
         })
         .catch((err)=>{
-          alert(err.response.data.message);
+          alert(err.data.message);
         })
 
-
-
     },
-    //刪除
+    //刪除產品
     delProduct(){
       const url = `${this.apiUrl}/v2/api/${this.apiPath}/admin/product/${this.tempProduct.id}`;
       axios.delete(url)
         .then((res)=>{
           alert(res.data.message);
-          delProductModal.hide();
-          this.getProducts();
+          delProductModal.hide(); //刪除完關掉modal
+          this.getProducts(); //取得產品列表,重新渲染頁面
         })
         .catch((err)=>{
-          alert(err.response.data.message);
+          alert(err.data.message);
         })
     }
   },
