@@ -10,7 +10,7 @@ const app = {
       apiUrl:"https://vue3-course-api.hexschool.io",
       apiPath:"fang-vueclass",
       products: [],
-      isNew:false,
+      isNew:false, //用來判斷modal是新增還是編輯
       tempProduct:{
         imagesUrl:[],
       },
@@ -63,7 +63,7 @@ const app = {
       }
     },
     updateProduct(){
-      //讓post和put透過判斷式執行,就不用寫兩遍
+      //讓post和put透過if判斷式isNew是新增還是編輯
       let url = `${this.apiUrl}/v2/api/${this.apiPath}/admin/product/`;
       let http = 'post';
 
@@ -94,7 +94,11 @@ const app = {
         .catch((err)=>{
           alert(err.data.message);
         })
-    }
+    },
+    createImages(){
+      this.tempProduct.imagesUrl = []; //因為this.tempProduct.imagesUrl是空陣列,是undefined,必須先給一個空陣列
+      this.tempProduct.imagesUrl.push('');//再push一個空字串,讓input區可以顯示
+    },
   },
 
   mounted(){

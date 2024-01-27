@@ -17,6 +17,7 @@
           建立新的產品
         </button>
       </div>
+        <!-- 取得產品列表 -->
       <table class="table mt-4">
         <thead>
           <tr>
@@ -76,26 +77,45 @@
           </div>
           <div class="modal-body">
             <div class="row">
+               <!-- modal左邊的欄位 -->
               <div class="col-sm-4">
-                <div class="mb-2">
-                  <div class="mb-3">
-                    <label for="imageUrl" class="form-label">輸入圖片網址</label>
-                    <input type="text" class="form-control"
-                           placeholder="請輸入圖片連結" v-model="tempProduct.imageUrl">
-                    <img class="img-fluid" :src="tempProduct.imageUrl" alt="">
+                <div class="mb-3">
+                  <label for="imageUrl" class="form-label">主要圖片</label>
+                  <input id="imageUrl" v-model="tempProduct.imageUrl" type="text" class="form-control mb-2" placeholder="請輸入圖片連結">
+                  <img class="img-fluid" :src="tempProduct.imageUrl">
+                </div>
+                <h3 class="mb-3">新增多圖</h3>
+                <!-- tempProduct.imagesUrl是陣列,顯示以下區塊內容 -->
+                <div v-if="Array.isArray(tempProduct.imagesUrl)">
+                  <div class="mb-1" v-for="(img,key) in tempProduct.imagesUrl" :key="key">
+                    <div class="mb-3">
+                      <label :for="`imagesUrl${key}`" class="form-label">圖片網址</label>
+                      <input :id="`imagesUrl${key}`" type="text" class="form-control mb-2" placeholder="請輸入圖片連結" v-model="tempProduct.imagesUrl[key]">
+                    </div>
+                    <img class="img-fluid" :src="img">
+                  </div>
+                  <!-- 對新增多圖後方的按鈕做判斷, 如果陣列為空值或是陣列最後一筆有資料,就顯示新增按鈕,按下按鈕會寫入最後一筆-->
+                  <div v-if="!tempProduct.imagesUrl.length || tempProduct.imagesUrl[tempProduct.imagesUrl.length -1]">
+                    <button class="btn btn-outline-primary btn-sm d-block w-100" @click="tempProduct.imagesUrl.push('')">
+                      新增圖片
+                    </button>
+                  </div>
+                  <!-- 如果陣列最後一筆沒有資料(還是空字串),就顯示刪除按鈕,當輸入網址就會自動跳到新增圖片按鈕 -->
+                  <div v-else>
+                    <button class="btn btn-outline-danger btn-sm d-block w-100" @click="tempProduct.imagesUrl.pop()">
+                      刪除圖片
+                    </button>
                   </div>
                 </div>
-                <div>
-                  <button class="btn btn-outline-primary btn-sm d-block w-100">
-                    新增圖片
-                  </button>
-                </div>
+                <!-- tempProduct.imagesUrl不是陣列,顯示新增圖片按鈕 -->
                 <div v-else>
-                  <button class="btn btn-outline-danger btn-sm d-block w-100">
-                    刪除圖片
-                  </button>
+                    <button class="btn btn-outline-primary btn-sm d-block w-100" @click="createImages">
+                      新增圖片
+                    </button>
                 </div>
+
               </div>
+              <!-- modal右邊的欄位 -->
               <div class="col-sm-8">
                 <div class="mb-3">
                   <label for="title" class="form-label">標題</label>
@@ -117,12 +137,12 @@
                 <div class="row">
                   <div class="mb-3 col-md-6">
                     <label for="origin_price" class="form-label">原價</label>
-                    <input id="origin_price" type="number" min="0" class="form-control" placeholder="請輸入原價" v-model="tempProduct.origin_price">
+                    <input id="origin_price" type="number" min="0" class="form-control" placeholder="請輸入原價" v-model.number="tempProduct.origin_price">
                   </div>
                   <div class="mb-3 col-md-6">
                     <label for="price" class="form-label">售價</label>
                     <input id="price" type="number" min="0" class="form-control"
-                           placeholder="請輸入售價" v-model="tempProduct.price">
+                           placeholder="請輸入售價" v-model.number="tempProduct.price">
                   </div>
                 </div>
                 <hr>
